@@ -1,0 +1,16 @@
+.layout {
+    background-color:blue;
+    width:300px;
+    height:300px;
+    border: 5px solid #000;
+    border-radius: 100px;
+    text-align: center;
+}
+.title{
+    color:white;
+    font-size: 200%;
+    font-weight: 900;
+    margin-top: 50px;
+    padding-top: 50px;
+    font-family: 'Noto Sans KR', sans-serif;
+}
