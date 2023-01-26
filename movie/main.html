@@ -6,7 +6,9 @@
     <title>간편영화후기</title>
 
     <!-- 부트스트랩입력 -->
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+
     
     <!-- 구글폰트 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,73 +30,109 @@
 
 <!-- 점보트론 -->
 
-<div class="container">
-    <div class="jumbotron" id="jumbotron">
-        <h1 class="display-4">Hello, world!</h1>
-        <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
-        <hr class="my-4">
-        <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
-        <a class="btn btn-danger btn-lg" href="#" role="button">Learn more</a>
-    </div>
-
-
-<div class="row row-cols-1 row-cols-md-3">
-    <div class="col mb-4">
-      <div class="card h-100">
-        <img src="..." class="card-img-top" alt="...">
-        <div class="card-body">
-          <h5 class="card-title">Card title</h5>
-          <button type="button" class="btn btn-success" id="review-button" onclick="review()">리뷰보기</button>
+    <div class="container">
+        <div class="jumbotron" id="jumbotron">
+            <h1 class="display-4">인기/최신 영화에 한마디씩!</h1>
+            <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+            <hr class="my-4">
+            <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+            <a class="btn btn-danger btn-lg" href="#" role="button">Learn more</a>
         </div>
-      </div>
-    </div>   
-  </div>
-</div>
 
-<div class="modal" id="review-modal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Modal title</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+
+        <div class="row row-cols-1 row-cols-md-3" id="movie-list">
+
+            <div class="col mb-4">
+            <div class="card">
+                <img src="..." class="card-img-top" alt="...">
+                <div class="card-body">
+                <h5 class="card-title">Card title</h5>
+                <button type="button" class="btn btn-success" id="review-button" onclick="review()">리뷰보기</button>
+                </div>
+            </div>
+            </div> 
+
         </div>
-        <div class="modal-body">
-          <p>Modal body text goes here.</p>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
+
+        <div class="modal" id="review-modal" tabindex="-1">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title">후기</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                <p>Modal body text goes here.</p>
+                </div>
+                <div class="modal-footer">
+                <input type="text" class="form-control" id="review" style="width:70%"/>
+                <button type="button" class="btn btn-primary" onclick="addReview()">후기 쓰기</button>
+                </div>
+            </div>
+            </div>
         </div>
-      </div>
-    </div>
-</div>
 
-<!-- 부트스트랩,jquery 링크 -->
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
-<script>
-    $(document).ready(function(){
-        console.log("시작!")
+    <!-- 부트스트랩,jquery 링크 -->
+    <script 
+    src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
 
-        $.ajax({
-            url:"https://api.themoviedb.org/3/movie/550?api_key=a50a00d313c351ac2aa207ed9c6691d1",
-            data:{"key":"value"},
-            type:"POST",
-            success:function(json){
-                
-            },
-            error:function(err){
-                
-            }
-        })
-    })
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+        <script>        
+            $(document).ready(function(){
+                console.log("시작!")
 
-    function review(){
-        $('#review-modal').modal('show')
-    }    
-</script>
+                $.ajax({
+                    url:"https://api.themoviedb.org/3/movie/popular?api_key=a50a00d313c351ac2aa207ed9c6691d1&page=1",
+                    data:{"key":"value"},
+                    type:"POST",
+                    success:function(json){   
+                        console.log(json)  
+                        $("#movie-list").html('');
+                        let movie_list = json.results;
+
+                        for(let i=0; i<movie_list.length; i++){
+                            let card = `<div class="col mb-4">
+                                <div class="card">
+                                    <img src="https://image.tmdb.org/t/p/w500${movie_list[i].poster_path}" class="card-img-top" alt="...">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${movie_list[i].original_title}</h5>
+                                        <button type="button" class="btn btn-success" id="review-button" onclick="review(${movie_list[i].id})">리뷰보기</button>
+                                    </div>
+                                </div>
+                            </div> `
+
+                            $("#movie-list").append(card)
+
+                        }
+                    },
+                    error:function(err){
+                        
+                    }
+                })
+            })
+            function review(id){
+                $.ajax({
+                    url:`https://api.themoviedb.org/3/movie/${id}/reviews?api_key=a50a00d313c351ac2aa207ed9c6691d1&page=1`,
+                    data:{},
+                    type:"GET",
+                    success:function(json){
+                        console.log(json.data);
+                        let reviews = json.data;
+                        $(".modal-body").html('')
+                        for(let i=0; i<reviews.length; i++){
+                            $(".modal-body").append(`<p>${reviews[i].review}</p>`)
+                        }
+                    }
+                })
+
+                $('#review-modal').modal('show');
+            }       
+
+
+        </script>
 
 
 </body>
