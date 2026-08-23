@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
 
     <meta charset="UTF-8">
@@ -10,14 +10,14 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
 
-    
+
     <!-- 구글폰트 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@700;900&display=swap" rel="stylesheet">
-   
+
     <!-- 스타일시트 위치 지정 -->
-    <link rel="stylesheet" href="./main.css"/> 
+    <link rel="stylesheet" href="./main.css"/>
 
 </head>
 <body>
@@ -34,24 +34,28 @@
 <div class="container">
     <div class="jumbotron" id="jumbotron">
         <h1 class="display-4">인기/최신 영화에 한마디씩!</h1>
-        <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+        <p class="lead">TMDB에서 현재 인기 있는 영화를 불러옵니다. 카드의 "리뷰보기"를 누르면 그 영화의 후기를 볼 수 있어요.</p>
         <hr class="my-4">
-        <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
-        <a class="btn btn-danger btn-lg" href="#" role="button">Learn more</a>
+        <p>HTML · CSS · 부트스트랩 · jQuery · Ajax를 연습하려고 만든 페이지입니다.</p>
+        <a class="btn btn-danger btn-lg" href="https://www.themoviedb.org/" target="_blank" rel="noopener" role="button">TMDB 보러가기</a>
     </div>
 
+    <!-- 설정 파일이 없을 때 보여줄 안내 -->
+    <div class="alert alert-warning d-none" id="config-warning">
+        <b>API 키 설정이 필요합니다.</b>
+        <code>movie/config.sample.js</code>를 <code>movie/config.js</code>로 복사한 뒤,
+        본인의 TMDB API 키를 넣어주세요.
+    </div>
 
     <div class="row row-cols-1 row-cols-md-3" id="movie-list">
 
         <div class="col mb-4">
             <div class="card">
-                <img src="..." class="card-img-top" alt="...">
                 <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <button type="button" class="btn btn-success" id="review-button" onclick="review()">리뷰보기</button>
+                <h5 class="card-title">불러오는 중...</h5>
                 </div>
             </div>
-        </div> 
+        </div>
 
     </div>
 </div>
@@ -66,7 +70,7 @@
             </button>
             </div>
             <div class="modal-body">
-            <p>Modal body text goes here.</p>
+            <p>불러오는 중...</p>
             </div>
             <div class="modal-footer">
             <input type="text" class="form-control" id="review" style="width:70%"/>
@@ -77,30 +81,53 @@
 </div>
 
     <!-- 부트스트랩,jquery 링크 -->
-<script 
+<script
 src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
-<script>        
+
+<!-- API 키는 config.js 에 따로 둔다 (config.sample.js 참고) -->
+<script src="./config.js"></script>
+
+<script>
+    // config.js 가 없으면 CONFIG 가 정의되지 않는다
+    const API_KEY = (typeof CONFIG !== "undefined") ? CONFIG.TMDB_API_KEY : null;
+
+    // 포스터 이미지가 없는 영화를 위한 대체 이미지
+    const NO_POSTER = "https://placehold.co/500x750?text=No+Poster";
+
     $(document).ready(function(){
         console.log("시작!")
 
+        if(!API_KEY || API_KEY === "YOUR_TMDB_API_KEY_HERE"){
+            $("#config-warning").removeClass("d-none");
+            $("#movie-list").html('');
+            return;
+        }
+
         $.ajax({
-            url:"https://api.themoviedb.org/3/movie/popular?api_key=YOUR_TMDB_API_KEY_HERE&page=1",
-            data:{"key":"value"},
-            type:"POST",
-            success:function(json){   
-                console.log(json)  
+            // TMDB v3 API 는 GET 으로만 호출된다 (POST 로 보내면 405 에러)
+            url:`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=ko-KR&page=1`,
+            type:"GET",
+            success:function(json){
+                console.log(json)
                 $("#movie-list").html('');
+
+                // 응답의 영화 목록은 results 안에 들어있다
                 let movie_list = json.results;
 
                 for(let i=0; i<movie_list.length; i++){
+                    let movie = movie_list[i];
+                    let poster = movie.poster_path
+                        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                        : NO_POSTER;
+
                     let card = `<div class="col mb-4">
                         <div class="card">
-                            <img src="https://image.tmdb.org/t/p/w500${movie_list[i].poster_path}" class="card-img-top" alt="...">
+                            <img src="${poster}" class="card-img-top" alt="${movie.title} 포스터">
                             <div class="card-body">
-                                <h5 class="card-title">${movie_list[i].original_title}</h5>
-                                <button type="button" class="btn btn-success" id="review-button" onclick="review(${movie_list[i].id})">리뷰보기</button>
+                                <h5 class="card-title">${movie.title}</h5>
+                                <button type="button" class="btn btn-success review-button" onclick="review(${movie.id}, '${movie.title.replace(/'/g, "\\'")}')">리뷰보기</button>
                             </div>
                         </div>
                     </div> `
@@ -110,33 +137,54 @@ src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6d
                 }
             },
             error:function(err){
-                
+                console.log(err)
+                $("#movie-list").html('<div class="col"><div class="alert alert-danger">영화 목록을 불러오지 못했습니다. API 키를 확인해주세요.</div></div>')
             }
         })
     })
-    function review(id){
+
+    function review(id, title){
+        $(".modal-title").text(title ? `${title} 후기` : "후기");
+        $(".modal-body").html('<p>불러오는 중...</p>');
+        $('#review-modal').modal('show')
+
         $.ajax({
-            url:`https://api.themoviedb.org/3/movie/${id}/reviews?api_key=YOUR_TMDB_API_KEY_HERE&page=1`,
-            data:{},
-            type:"GET",            
+            url:`https://api.themoviedb.org/3/movie/${id}/reviews?api_key=${API_KEY}&page=1`,
+            type:"GET",
             success:function(json){
-                console.log(json.data);
-                let reviews = json.data;
+                console.log(json);
+
+                // 후기 목록도 results 안에 있고, 본문은 content 필드다
+                let reviews = json.results;
                 $(".modal-body").html('');
-                for(let i=0; i<reviews.length; i++){
-                    $(".modal-body").append(`<p>${reviews[i].review}</p>`);
+
+                if(reviews.length === 0){
+                    $(".modal-body").append('<p>아직 등록된 후기가 없습니다.</p>');
+                    return;
                 }
+
+                for(let i=0; i<reviews.length; i++){
+                    $(".modal-body").append(`<p><b>${reviews[i].author}</b><br>${reviews[i].content}</p><hr>`);
+                }
+            },
+            error:function(err){
+                console.log(err);
+                $(".modal-body").html('<p>후기를 불러오지 못했습니다.</p>');
             }
         })
+    }
 
-        $('#review-modal').modal('show')
-    }       
+    // TODO: 내가 쓴 후기를 저장하려면 서버(백엔드)가 필요하다. 아직 미구현.
+    function addReview(){
+        let myReview = $("#review").val().trim();
+        if(myReview === "") return;
 
+        $(".modal-body").append(`<p><b>나</b><br>${myReview}</p><hr>`);
+        $("#review").val('');
+    }
 
 </script>
 
 
 </body>
 </html>
-
-

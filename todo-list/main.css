@@ -26,7 +26,7 @@ body {
     padding-top: 20px
 }
 
-#list-group-item{
+.todo-item {
     font-family: 'Noto Sans KR', sans-serif;
 }
 
