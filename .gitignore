@@ -1,0 +1,11 @@
+# API 키 등 공개하면 안 되는 설정 (config.sample.js 를 복사해서 만든다)
+config.js
+
+# OS / 에디터가 만드는 파일
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# 로그
+*.log
